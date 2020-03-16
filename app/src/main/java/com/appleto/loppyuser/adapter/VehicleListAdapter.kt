@@ -5,10 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.NonNull
 import com.appleto.loppyuser.R
 import com.appleto.loppyuser.apiModels.TruckListDatum
@@ -32,15 +29,18 @@ class VehicleListAdapter(
     }
 
     override fun onBindViewHolder(@NonNull holder: ViewHolder, position: Int) {
-        holder.rbChoose.isChecked = selectedPosition == position
+        if (selectedPosition == position) {
+            holder.frame.background = context.resources.getDrawable(R.drawable.selected_truck_bg)
+        } else {
+            holder.frame.background = context.resources.getDrawable(R.drawable.truck_bg)
+        }
         Glide
             .with(context)
             .load(data[position].image)
-            .centerCrop()
             .placeholder(R.mipmap.ic_launcher)
             .into(holder.ivTruckImage)
         holder.tvTruckName.text = data[position].name
-        holder.tvTruckCapacity.text = "Capacity : " + data[position].capacity
+        holder.tvTruckCapacity.text = data[position].capacity
 
         holder.llRoot.setOnClickListener {
             selectedPosition = position
@@ -55,9 +55,9 @@ class VehicleListAdapter(
 
     inner class ViewHolder(@NonNull itemView: View) : RecyclerView.ViewHolder(itemView) {
         var llRoot: LinearLayout = itemView.findViewById(R.id.llRoot)
-        var rbChoose: RadioButton = itemView.findViewById(R.id.rbChoose)
         var ivTruckImage: ImageView = itemView.findViewById(R.id.ivTruckImage)
         var tvTruckName: TextView = itemView.findViewById(R.id.tvTruckName)
         var tvTruckCapacity: TextView = itemView.findViewById(R.id.tvTruckCapacity)
+        var frame: FrameLayout = itemView.findViewById(R.id.frame)
     }
 }

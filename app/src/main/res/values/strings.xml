@@ -74,4 +74,9 @@
     <string name="select_payment_type">Select Payment Type</string>
     <string name="ride_history">Ride History</string>
     <string name="no_record_found">No Record Found.</string>
+    <string name="full_loader">Full Loader</string>
+    <string name="half_loader">Half Loader</string>
+    <string name="height">Height</string>
+    <string name="length">Length</string>
+    <string name="company_name">Company Name</string>
 </resources>

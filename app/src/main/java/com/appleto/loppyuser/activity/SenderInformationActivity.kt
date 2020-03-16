@@ -30,17 +30,10 @@ class SenderInformationActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(p0: View?) {
         when (p0) {
             btnSubmit -> {
-                if (!Utils.isEmptyEditText(edtName, "Please enter name", cardName)
-                    && !Utils.isEmptyEditText(edtMobile, "Please enter mobile", cardMobile)
-                    && !Utils.isEmptyEditText(edtLoadType, "Please select load type", cardLoadType)
-                    && !Utils.isEmptyEditText(edtGoodType, "Please select good type", cardGoodType)
-                    && !Utils.isEmptyEditText(edtQuantity, "Please enter quantity", cardQuantity)
-                    && !Utils.isEmptyEditText(
-                        edtHandlers,
-                        "Please enter no of handlers",
-                        cardNoOfHandlers
-                    )
+                if (!Utils.isEmptyEditText(edtGoodType, "Please select good type", cardGoodType)
                     && !Utils.isEmptyEditText(edtWeight, "Please enter weight", cardWeight)
+                    && !Utils.isEmptyEditText(edtHeight, "Please enter height", cardHeight)
+                    && !Utils.isEmptyEditText(edtLength, "Please enter length", cardLength)
                     && !Utils.isEmptyEditText(
                         edtDescription,
                         "Please enter additional description",
@@ -48,19 +41,27 @@ class SenderInformationActivity : AppCompatActivity(), View.OnClickListener {
                     )
                 ) {
                     val model = LoadDetailsModel()
-                    model.name = edtName.text.toString().trim()
-                    model.mobile = edtMobile.text.toString().trim()
-                    model.loadType = loadTypeId
+                    model.name = ""
+                    model.mobile = ""
+                    model.loadType = ""
                     model.goodType = goodTypeId
-                    model.length = ""
+                    model.length = edtLength.text.toString().trim()
                     model.width = ""
-                    model.height = ""
+                    model.height = edtHeight.text.toString().trim()
                     model.weight = edtWeight.text.toString().trim()
-                    model.quantity = edtQuantity.text.toString().trim()
-                    model.no_of_handlers = edtHandlers.text.toString().trim()
+                    model.quantity = ""
+                    model.no_of_handlers = ""
                     model.additionalInfo = edtDescription.text.toString().trim()
 
-                    addRideRequest(model)
+                    startActivity(
+                        Intent(this, ReceiverInformationActivity::class.java)
+                            .putExtra(Const.AMOUNT, amount)
+                            .putExtra(Const.TRUCK_DATA, selectedTruck)
+                            .putExtra(Const.DURATION, duration)
+                            .putExtra(Const.PAID_BY, paidBy)
+                            .putExtra(Const.LOAD_INFO, model)
+                    )
+//                    addRideRequest(model)
 //                    val intent = Intent()
 //                    intent.putExtra(Const.LOAD_DATA, model)
 //                    setResult(Activity.RESULT_OK, intent)
@@ -113,7 +114,7 @@ class SenderInformationActivity : AppCompatActivity(), View.OnClickListener {
         selectedTruck = intent?.extras?.getParcelable(Const.TRUCK_DATA)
 
         Handler().postDelayed({
-            viewModel?.getLoadType(this)
+            //            viewModel?.getLoadType(this)
             viewModel?.getGoodType(this)
         }, 500)
         viewModel?.responseLoadType?.observe(this, Observer {

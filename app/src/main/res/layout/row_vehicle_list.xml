@@ -2,61 +2,43 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/llRoot"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:background="@android:color/white"
+    android:gravity="center"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp">
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/truck_bg">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/ivTruckImage"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:padding="@dimen/fab_margin"
+            android:src="@mipmap/ic_launcher" />
+    </FrameLayout>
 
-            <ImageView
-                android:id="@+id/ivTruckImage"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:contentDescription="@null"
-                android:src="@mipmap/ic_launcher" />
+    <TextView
+        android:id="@+id/tvTruckName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_font_size"
+        tools:text="Tata Ace" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvTruckCapacity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="12sp"
+        tools:text="1550 Kg" />
 
-                <TextView
-                    android:id="@+id/tvTruckName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    tools:text="Tata Ace" />
-
-                <TextView
-                    android:id="@+id/tvTruckCapacity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="Capacity : 1550 Kg" />
-            </LinearLayout>
-
-            <RadioButton
-                android:id="@+id/rbChoose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

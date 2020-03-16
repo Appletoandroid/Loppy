@@ -13,9 +13,15 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.widget.RadioButton
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.appleto.loppyuser.R
+import com.appleto.loppyuser.adapter.VehicleListAdapter
+import com.appleto.loppyuser.apiModels.TruckListDatum
 import com.appleto.loppyuser.helper.*
+import com.appleto.loppyuser.viewModel.TruckListViewModel
 import com.bumptech.glide.Glide
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -48,7 +54,12 @@ import java.text.SimpleDateFormat
 import com.karumi.dexter.listener.single.PermissionListener as PermissionListener
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListener {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListener,
+        (TruckListDatum) -> Unit {
+    override fun invoke(p1: TruckListDatum) {
+        selectedTruck = p1
+    }
+
     override fun onClick(p0: View?) {
         when (p0) {
             ibMenu -> {
@@ -62,29 +73,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
                 if (!Utils.isEmptyEditText(
                         edtPickUpLocation,
                         "Please select pickup location",
-                        cardPickUpLocation
+                        edtPickUpLocation
                     )
                     && !Utils.isEmptyEditText(
                         edtDestinationLocation,
                         "Please select destination location",
-                        cardDestinationLocation
+                        edtDestinationLocation
                     )
-                    && !Utils.isEmptyEditText(edtDate, "Please select date", cardDate)
-                    && !Utils.isEmptyEditText(edtTime, "Please select time", cardTime)
                 ) {
-                    goToNext()
+                    if (selectedTruck == null) {
+                        Utils.showSnackBar(root, "Please select vehicle")
+                    } else {
+                        goToNext()
+                    }
                 }
-            }
-            llPickUpLocation -> {
-                fromIntent = 1
-                openPlacesIntent()
             }
             edtPickUpLocation -> {
                 fromIntent = 1
-                openPlacesIntent()
-            }
-            llDestinationLocation -> {
-                fromIntent = 2
                 openPlacesIntent()
             }
             edtDestinationLocation -> {
@@ -142,6 +147,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
     var mDestinationLocationMarker: Marker? = null
     var selectedDate: Calendar? = null
     var selectedTime: Calendar? = null
+    private lateinit var adapter: VehicleListAdapter
+    private var vehicleList = ArrayList<TruckListDatum>()
+    private var viewModel: TruckListViewModel? = null
+    private var selectedTruck: TruckListDatum? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,6 +162,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        viewModel = ViewModelProvider(
+            this
+        ).get(TruckListViewModel::class.java)
+
+        adapter = VehicleListAdapter(this, vehicleList, this)
+        recyclerViewVehicles.adapter = adapter
+        recyclerViewVehicles.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        btnNext.setOnClickListener(this)
+
+        viewModel?.truckDetails(this)
+
+        viewModel?.response?.observe(this, androidx.lifecycle.Observer {
+            if (it?.data != null) {
+                vehicleList.clear()
+                vehicleList.addAll(it.data!!)
+                adapter.notifyDataSetChanged()
+            }
+        })
 
         Dexter.withActivity(this)
             .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -198,8 +227,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
 
         ibMenu.setOnClickListener(this)
         btnNext.setOnClickListener(this)
-        llPickUpLocation.setOnClickListener(this)
-        llDestinationLocation.setOnClickListener(this)
         llDate.setOnClickListener(this)
         llTime.setOnClickListener(this)
         edtPickUpLocation.setOnClickListener(this)
@@ -268,21 +295,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
                 it
             )
         }
-        PrefUtils.storeStringValue(
-            this,
-            Const.SELECTED_DATE,
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
-                selectedDate?.time
-            )
+        val selectedId = rgLoader.checkedRadioButtonId
+        val radioButton = findViewById<View>(selectedId) as RadioButton
+        var loadType = "full"
+        if (radioButton.text == "Full Loader") {
+            loadType = "full"
+        } else {
+            loadType = "half"
+        }
+
+        PrefUtils.storeStringValue(this, Const.LOAD_TYPE_PREF, loadType)
+        /*PrefUtils.storeStringValue(
+        this,
+        Const.SELECTED_DATE,
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
+        selectedDate?.time
+        )
         )
         PrefUtils.storeStringValue(
-            this,
-            Const.SELECTED_TIME,
-            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
-                selectedTime?.time
-            )
+        this,
+        Const.SELECTED_TIME,
+        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(
+        selectedTime?.time
         )
-        startActivity(Intent(this, VehicleListActivity::class.java))
+        )*/
+        startActivity(
+            Intent(this, VehicleDetailActivity::class.java)
+                .putExtra(Const.TRUCK_DATA, selectedTruck)
+        )
+//        startActivity(Intent(this, VehicleListActivity::class.java))
     }
 
     private fun openDatePicker() {
@@ -316,8 +357,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
 
         task.addOnSuccessListener { locationSettingsResponse ->
             // All location settings are satisfied. The client can initialize
-            // location requests here.
-            // ...
+// location requests here.
+// ...
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
@@ -327,8 +368,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
 
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
+// Location settings are not satisfied, but this can be fixed
+// by showing the user a dialog.
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
@@ -358,7 +399,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
     }
 
     private fun openPlacesIntent() {
-        // Initialize the SDK
+// Initialize the SDK
         Places.initialize(applicationContext, getString(R.string.google_maps_key))
         val fields =
             listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -398,11 +439,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
                     edtDestinationLocation.setText(place.name + ", " + place.address)
                 }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
+// TODO: Handle the error.
                 val status = Autocomplete.getStatusFromIntent(data!!)
                 Log.i("Error Found", status.statusMessage)
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                // The user canceled the operation.
+// The user canceled the operation.
             }
         } else if (requestCode == 101) {
             createLocationRequest()
@@ -487,10 +528,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
             edtDestinationLocation.setText(address)
         }
 
-        /* // Add a marker in Sydney and move the camera
-         val sydney = LatLng(-34.0, 151.0)
-         mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
+/* // Add a marker in Sydney and move the camera
+val sydney = LatLng(-34.0, 151.0)
+mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))*/
     }
 
     private fun setDestinationMarker(latitude: Double, longitude: Double) {
@@ -508,7 +549,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
             )
         )
         mDestinationLocationMarker = mMap.addMarker(markerOptions)
-        //move map camera
+//move map camera
         mMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
@@ -535,7 +576,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
         )
         mPickUpLocationMarker = mMap.addMarker(markerOptions)
 
-        //move map camera
+//move map camera
         mMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
@@ -562,18 +603,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
                 )
             }
         } catch (ioException: IOException) {
-            // Catch network or other I/O problems.
+// Catch network or other I/O problems.
             errorMessage = "Service not available"
             Log.e(MainActivity::class.java.simpleName, errorMessage, ioException)
         } catch (illegalArgumentException: IllegalArgumentException) {
-            // Catch invalid latitude or longitude values.
+// Catch invalid latitude or longitude values.
             errorMessage = "Invalid lattitude and longitude"
             Log.e(
                 MainActivity::class.java.simpleName, "$errorMessage. Latitude = $latitude , " +
                         "Longitude =  $longitude", illegalArgumentException
             )
         }
-        // Handle case where no address was found.
+// Handle case where no address was found.
         if (addresses.isEmpty()) {
             if (errorMessage.isEmpty()) {
                 errorMessage = "No address found"
@@ -583,8 +624,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
 //            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage)
         } else {
             val address = addresses[0]
-            // Fetch the address lines using getAddressLine,
-            // join them, and send them to the thread.
+// Fetch the address lines using getAddressLine,
+// join them, and send them to the thread.
             val addressFragments = with(address) {
                 (0..maxAddressLineIndex).map { getAddressLine(it) }
             }

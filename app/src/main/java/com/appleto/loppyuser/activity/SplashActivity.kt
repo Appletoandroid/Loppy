@@ -19,7 +19,7 @@ class SplashActivity : AppCompatActivity() {
             if (PrefUtils.getBooleanValue(this, Const.IS_LOGGED_IN)) {
                 startActivity(Intent(this, MainActivity::class.java))
             } else {
-                startActivity(Intent(this, IntroSliderActivity::class.java))
+                startActivity(Intent(this, WelcomeActivity::class.java))
             }
             finish()
         }, 2000)

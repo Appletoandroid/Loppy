@@ -53,7 +53,7 @@ class SenderInfoViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun getGoodType(context: Context) {
-//        Utils.showProgress(context)
+        Utils.showProgress(context)
         disposable =
             apiService
                 ?.getGoodType()
@@ -61,7 +61,7 @@ class SenderInfoViewModel(application: Application) : AndroidViewModel(applicati
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.subscribe(
                     { result ->
-                        //                        Utils.hideProgress()
+                        Utils.hideProgress()
                         if (result.status == 1) {
                             responseGoodType.value = result
                         } else {
@@ -73,7 +73,7 @@ class SenderInfoViewModel(application: Application) : AndroidViewModel(applicati
                         }
                     },
                     { error ->
-                        //                        Utils.hideProgress()
+                        Utils.hideProgress()
                         Toast.makeText(context, error.localizedMessage, Toast.LENGTH_LONG).show()
                     }
                 )

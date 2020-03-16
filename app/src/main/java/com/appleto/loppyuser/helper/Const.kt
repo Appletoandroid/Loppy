@@ -15,6 +15,7 @@ object Const{
     const val DURATION = "duration"
     const val PAID_BY = "paid_by"
     const val JOB_DATA = "job_data"
+    const val LOAD_INFO = "load_info"
 
     //preference value
     const val USER_ID = "user_id"
@@ -36,4 +37,5 @@ object Const{
     const val DESTINATION_LNG = "destination_lng"
     const val SELECTED_DATE = "selected_Date"
     const val SELECTED_TIME = "selected_time"
+    const val LOAD_TYPE_PREF = "load_type_pref"
 }

@@ -38,13 +38,13 @@ class VehicleDetailActivity : AppCompatActivity(), View.OnClickListener {
                 val selectedId = rgPaidBy.checkedRadioButtonId
 
                 // find the radiobutton by returned id
-                val radioButton = findViewById<View>(selectedId) as RadioButton
-                var paidBy = "sender"
-                if (radioButton.text == "Sender") {
+//                val radioButton = findViewById<View>(selectedId) as RadioButton
+                val paidBy = "sender"
+                /*if (radioButton.text == "Sender") {
                     paidBy = "sender"
                 } else {
                     paidBy = "receiver"
-                }
+                }*/
                 startActivity(
                     Intent(this, SenderInformationActivity::class.java)
                         .putExtra(Const.AMOUNT, amount)
@@ -170,6 +170,7 @@ class VehicleDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun getDurationForRoute() {
         try {
+            Utils.showProgress(this)
             // access api
             val geoApiContext = GeoApiContext.Builder()
                 .apiKey(getString(R.string.google_maps_key))
@@ -193,8 +194,10 @@ class VehicleDetailActivity : AppCompatActivity(), View.OnClickListener {
             amount = "%.2f".format(getAmount)
             tvEstimatedAmount.text = "RS.$amount"
             tvAmount.text = "RS.$amount"
+            Utils.hideProgress()
         } catch (e: Exception) {
             e.printStackTrace()
+            Utils.hideProgress()
         }
     }
 
