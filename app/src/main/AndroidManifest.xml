@@ -25,6 +25,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+
+        <!-- Add your API key here -->
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_test_jmgJZ4ST8fAHTU" />
+
+        <activity
+            android:name=".activity.NotificationActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.ReceiverInformationActivity"
             android:theme="@style/AppTheme.NoActionBar" />

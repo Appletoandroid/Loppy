@@ -3,6 +3,7 @@ package com.appleto.loppyuser.activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +27,7 @@ class ReceiverInformationActivity : AppCompatActivity(), View.OnClickListener {
                         "Please enter company name",
                         cardCompanyName
                     )
+                    && !Utils.isEmptyEditText(edtMobile, "Please enter mobile", cardMobile)
                     && !Utils.isEmptyEditText(edtAddress, "Please enter address", cardAddress)
                 ) {
                     addRideRequest()
@@ -113,7 +115,7 @@ class ReceiverInformationActivity : AppCompatActivity(), View.OnClickListener {
         sendData["paid_by"] = paidBy.toString()*/
         sendData["amount"] = amount.toString()
 //        sendData["receiver_name"] = loadData?.name.toString()
-//        sendData["receiver_mobile_no"] = loadData?.mobile.toString()
+        sendData["receiver_mobile_no"] = edtMobile.text.toString().trim()
 //        sendData["load_type"] = loadData?.loadType.toString()
         sendData["good_type"] = loadData?.goodType.toString()
         sendData["length"] = loadData?.length.toString()
@@ -131,5 +133,13 @@ class ReceiverInformationActivity : AppCompatActivity(), View.OnClickListener {
 
         viewModel?.addRideRequest(this, sendData)
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

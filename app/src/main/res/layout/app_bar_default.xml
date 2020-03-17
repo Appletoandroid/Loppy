@@ -152,7 +152,7 @@
                     <RadioButton
                         android:id="@+id/rbHalfLoad"
                         style="@style/RadioSelectionStyle"
-                        android:text="@string/half_loader" />
+                        android:text="@string/part_loader" />
 
                 </RadioGroup>
 

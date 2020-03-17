@@ -32,13 +32,13 @@ class SenderInformationActivity : AppCompatActivity(), View.OnClickListener {
             btnSubmit -> {
                 if (!Utils.isEmptyEditText(edtGoodType, "Please select good type", cardGoodType)
                     && !Utils.isEmptyEditText(edtWeight, "Please enter weight", cardWeight)
-                    && !Utils.isEmptyEditText(edtHeight, "Please enter height", cardHeight)
-                    && !Utils.isEmptyEditText(edtLength, "Please enter length", cardLength)
-                    && !Utils.isEmptyEditText(
-                        edtDescription,
-                        "Please enter additional description",
-                        cardDesc
-                    )
+//                    && !Utils.isEmptyEditText(edtHeight, "Please enter height", cardHeight)
+//                    && !Utils.isEmptyEditText(edtLength, "Please enter length", cardLength)
+//                    && !Utils.isEmptyEditText(
+//                        edtDescription,
+//                        "Please enter additional description",
+//                        cardDesc
+//                    )
                 ) {
                     val model = LoadDetailsModel()
                     model.name = ""

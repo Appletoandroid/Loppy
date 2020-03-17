@@ -113,5 +113,9 @@ interface ApiService {
 
     @FormUrlEncoded
     @POST("get_driver_location")
-    fun getDriverLocation(@Field("driver_id") driverId : String) : Observable<JsonObject>
+    fun getDriverLocation(@Field("driver_id") driverId: String): Observable<JsonObject>
+
+    @FormUrlEncoded
+    @POST("get_user_notification")
+    fun getNotifications(@Field("user_id") userId: String): Observable<NotificationListModel>
 }

@@ -133,6 +133,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
             nav_view.getHeaderView(0).llLogout -> {
                 logOut()
             }
+            nav_view.getHeaderView(0).llNotification -> {
+                startActivity(Intent(this, NotificationActivity::class.java))
+            }
         }
     }
 
@@ -238,6 +241,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, View.OnClickListen
         nav_view.getHeaderView(0).llProfile.setOnClickListener(this)
         nav_view.getHeaderView(0).llLogout.setOnClickListener(this)
         nav_view.getHeaderView(0).llHistory.setOnClickListener(this)
+        nav_view.getHeaderView(0).llNotification.setOnClickListener(this)
     }
 
     private fun logOut() {
